@@ -59,12 +59,12 @@ master:
 
   database:
     persistence: true
-    storageclass: "standard"
+    storageclass: "nfs-client"
     volumesize: 2Gi
 
   alarms:
     persistence: true
-    storageclass: "standard"
+    storageclass: "nfs-client"
     volumesize: 100Mi
 
   configs:
