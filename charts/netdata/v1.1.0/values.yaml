@@ -145,7 +145,6 @@ slave:
 
   podAnnotationAppArmor:
     enabled: true
-
   podAnnotations: {}
 
   configs:

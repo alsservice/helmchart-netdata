@@ -15,6 +15,7 @@ on a  [Kubernetes](http://kubernetes.io) cluster using the
 The chart installs a netdata slave pod on each node of a cluster, using a 
 `Daemonset` and a netdata master pod on one node, using a `Statefulset`. The slaves function as headless collectors that simply collect and forward all the metrics to the master netdata. The master uses persistent volumes to store metrics and alarms, handles alarm notifications and provides the netdata UI to view the metrics, using an ingress controller.
 
+
 ## Prerequisites
   - Kubernetes 1.8+
 
@@ -33,6 +34,7 @@ $ helm install --name my-release ./netdata
 ```
 
 The command deploys nginx-ingress on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters 
+
 that can be configured during installation.
 
 > **Tip**: List all releases using `helm list`
@@ -111,6 +113,7 @@ $ helm install ./netdata --name my-release \
 Another example, to set a different ingress controller.  
 
 By default `kubernetes.io/ingress.class` set to use `nginx` as an ingress controller but you can set `Traefik` as your ingress controller by set `ingress.annotations`.
+
 ```
 $ helm install ./netdata --name my-release \
     --set ingress.annotations=kubernetes.io/ingress.class: traefik
@@ -141,6 +144,7 @@ Parameter | Description | Default
 To deploy additional netdata user configuration files, you will need to add similar entries to either the master.configs or the slave. configs arrays. Regardless of whether you add config files that reside directly under `/etc/netdata` or in a subdirectory such as `/etc/netdata/go.d`, you can use the already provided configurations as reference. For reference, the `master.configs` the array includes an `example` alarm that would get triggered if the python.d `example` module was enabled. 
 
 Note that with the default configuration of this chart, the master does the health checks and triggers alarms, but does not collect much data. As a result, the only other configuration files that might make sense to add to the master are the alarm and alarm template definitions, under `/etc/netdata/health.d`. 
+
 
 > **Tip**: Do pay attention to the indentation of the config file contents, as it matters for the parsing of the `yaml` file. Note that the first line under `var: |` 
 must be indented with two more spaces relative to the preceding line:
