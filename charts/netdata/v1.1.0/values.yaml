@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: netdata/netdata
-  tag: v1.15.0
+  tag: v1.18.1
   pullPolicy: Always
 
 sysctlImage:
@@ -94,7 +94,10 @@ master:
           charts.d = no
           go.d = no
           node.d = no
-          apps = yes
+          apps = no
+          proc = no
+          idlejitter = no
+          diskspace = no
     health:
       enabled: true
       path: /etc/netdata/health_alarm_notify.conf
@@ -140,6 +143,8 @@ slave:
 
   podLabels: {}
 
+  podAnnotationAppArmor:
+    enabled: true
   podAnnotations: {}
 
   configs:
