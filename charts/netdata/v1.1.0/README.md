@@ -15,9 +15,8 @@ on a  [Kubernetes](http://kubernetes.io) cluster using the
 The chart installs a netdata slave pod on each node of a cluster, using a 
 `Daemonset` and a netdata master pod on one node, using a `Statefulset`. The slaves function as headless collectors that simply collect and forward all the metrics to the master netdata. The master uses persistent volumes to store metrics and alarms, handles alarm notifications and provides the netdata UI to view the metrics, using an ingress controller.
 
-
 ## Prerequisites
-  - Kubernetes 1.8+
+  - Kubernetes 1.9+
 
 ## Installing the Chart
 
@@ -34,7 +33,6 @@ $ helm install --name my-release ./netdata
 ```
 
 The command deploys nginx-ingress on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters 
-
 that can be configured during installation.
 
 > **Tip**: List all releases using `helm list`
@@ -58,7 +56,7 @@ Parameter | Description | Default
 --- | --- | ---
 `replicaCount` | Number of `replicas` for the master netdata `Statefulset` | `1`
 `image.repository` | Container image repo | `netdata/netdata`
-`image.tag` | Container image tag | `v1.12.2`
+`image.tag` | Container image tag | Latest stable netdata release (e.g. `v1.18.1`)
 `image.pullPolicy` | Container image pull policy | `Always`
 `service.type` | netdata master service type | `ClusterIP`
 `service.port` | netdata master service port | `19999`
@@ -67,6 +65,7 @@ Parameter | Description | Default
 `ingress.path` | URL path for the ingress | `/`
 `ingress.hosts` | URL hostnames for the ingress (they need to resolve to the external IP of the ingress controller) | `netdata.k8s.local`
 `rbac.create` | if true, create & use RBAC resources | `true`
+`rbac.pspEnabled` | Specifies whether a PodSecurityPolicy should be created. | `true`
 `serviceAccount.create` |if true, create a service account | `true`
 `serviceAccount.name` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template. | `netdata`
 `clusterrole.name` | Name of the cluster role linked with the service account | `netdata`
@@ -76,10 +75,10 @@ Parameter | Description | Default
 `master.tolerations` | Tolerations settings for the master statefulset | `[]`
 `master.affinity` | Affinity settings for the master statefulset | `{}`
 `master.database.persistence` | Whether the master should use a persistent volume for the DB | `true`
-`master.database.storageclass` | The storage class for the persistent volume claim of the master's database store, mounted to `/var/cache/netdata` | `standard`
+`master.database.storageclass` | The storage class for the persistent volume claim of the master's database store, mounted to `/var/cache/netdata` | the default storage class
 `master.database.volumesize` | The storage space for the PVC of the master database | `2Gi`
 `master.alarms.persistence` | Whether the master should use a persistent volume for the alarms log | `true`
-`master.alarms.storageclass` | The storage class for the persistent volume claim of the master's alarm log, mounted to `/var/lib/netdata` | `standard`
+`master.alarms.storageclass` | The storage class for the persistent volume claim of the master's alarm log, mounted to `/var/lib/netdata` | the default storage class
 `master.alarms.volumesize` | The storage space for the PVC of the master alarm log | `100Mi`
 `master.env` | Set environment parameters for the master statefulset | `{}`
 `master.podLabels` | Additional labels to add to the master pods | `{}`
@@ -112,8 +111,7 @@ $ helm install ./netdata --name my-release \
 
 Another example, to set a different ingress controller.  
 
-By default `kubernetes.io/ingress.class` set to use `nginx` as an ingress controller but you can set `Traefik` as your ingress controller by set `ingress.annotations`.
-
+By default `kubernetes.io/ingress.class` set to use `nginx` as an ingress controller but you can set `Traefik` as your ingress controller by setting `ingress.annotations`.
 ```
 $ helm install ./netdata --name my-release \
     --set ingress.annotations=kubernetes.io/ingress.class: traefik
@@ -144,7 +142,6 @@ Parameter | Description | Default
 To deploy additional netdata user configuration files, you will need to add similar entries to either the master.configs or the slave. configs arrays. Regardless of whether you add config files that reside directly under `/etc/netdata` or in a subdirectory such as `/etc/netdata/go.d`, you can use the already provided configurations as reference. For reference, the `master.configs` the array includes an `example` alarm that would get triggered if the python.d `example` module was enabled. 
 
 Note that with the default configuration of this chart, the master does the health checks and triggers alarms, but does not collect much data. As a result, the only other configuration files that might make sense to add to the master are the alarm and alarm template definitions, under `/etc/netdata/health.d`. 
-
 
 > **Tip**: Do pay attention to the indentation of the config file contents, as it matters for the parsing of the `yaml` file. Note that the first line under `var: |` 
 must be indented with two more spaces relative to the preceding line:

@@ -30,7 +30,7 @@ ingress:
 
 rbac:
   create: true
-
+  pspEnabled: true
 serviceAccount:
   create: true
   name: netdata
