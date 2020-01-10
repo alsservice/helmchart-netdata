@@ -31,7 +31,6 @@ ingress:
 rbac:
   create: true
   pspEnabled: true
-  
 serviceAccount:
   create: true
   name: netdata
@@ -95,7 +94,10 @@ master:
           charts.d = no
           go.d = no
           node.d = no
-          apps = yes
+          apps = no
+          proc = no
+          idlejitter = no
+          diskspace = no
     health:
       enabled: true
       path: /etc/netdata/health_alarm_notify.conf
@@ -144,7 +146,6 @@ slave:
 
   podAnnotationAppArmor:
     enabled: true
-
   podAnnotations: {}
 
   configs:
@@ -175,7 +176,6 @@ slave:
         update_every: 1
         autodetection_retry: 0
         jobs:
-          - url: http://127.0.0.1:9153/metrics
           - url: http://kube-dns.kube-system.svc.cluster.local:9153/metrics
     kubelet:
       enabled: true
@@ -184,9 +184,9 @@ slave:
         update_every: 1
         autodetection_retry: 0
         jobs:
-          - url: http://127.0.0.1:10255/metrics
           - url: https://localhost:10250/metrics
             tls_skip_verify: yes
+
     kubeproxy:
       enabled: true
       path: /etc/netdata/go.d/k8s_kubeproxy.conf
